@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Venv
+env/
+venv/
+ENV/
+.venv/
+*.env
+*.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Django Migrations (ixtiyoriy — faqat agar versiyada saqlamoqchi bo‘lmasangiz)
+# *__pycache__ ichida saqlanganidan keyin kerakmas
+# */migrations/*.pyc
+# */migrations/*.pyo
+# */migrations/__pycache__/
+
+# SQLite fayllar (agar ishlatilayotgan bo‘lsa)
+*.sqlite3
+
+# Media va static files (runtime da yaratiladi)
+media/
+staticfiles/
+static/
+
+# VSCode, PyCharm va boshqa IDE'lar
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage / test log files
+htmlcov/
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+
+# Log files
+*.log
+
+# Django secret key va boshqa maxfiy fayllar
+*.env
+.env.*
+
+# Celery beat scheduler fayli (agar foydalanayotgan bo‘lsangiz)
+celerybeat-schedule

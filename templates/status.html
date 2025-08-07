@@ -1,0 +1,719 @@
+<!-- templates/dormitory/status.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ariza holatini tekshirish - XIU Yotoqxona{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fix body scroll */
+    body {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: auto !important;
+    }
+    
+    /* Status badges with emoji */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+    }
+    
+    .status-badge.yangi {
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+        color: white;
+    }
+    
+    .status-badge.korilmoqda {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+        color: white;
+    }
+    
+    .status-badge.imtixon {
+        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+        color: white;
+    }
+    
+    .status-badge.tasdiqlandi {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        color: white;
+    }
+    
+    .status-badge.rad_etildi {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+        color: white;
+    }
+    
+    .status-badge.bekor {
+        background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+        color: white;
+    }
+    
+    /* Timeline styles */
+    .timeline-line {
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
+    }
+    
+    .timeline-dot {
+        position: absolute;
+        left: 12px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #3b82f6;
+        z-index: 1;
+    }
+    
+    .timeline-dot.active {
+        background: #3b82f6;
+        animation: pulse 2s infinite;
+    }
+    
+    .timeline-dot.completed {
+        background: #10b981;
+        border-color: #10b981;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+    }
+    
+    /* Search animation */
+    @keyframes searchPulse {
+        0%, 100% {
+            transform: scale(1) rotate(0deg);
+        }
+        50% {
+            transform: scale(1.05) rotate(5deg);
+        }
+    }
+    
+    .search-icon-animate {
+        animation: searchPulse 2s ease-in-out infinite;
+    }
+    
+    /* Result card animation */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .result-card {
+        animation: slideInUp 0.5s ease-out;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+        .timeline-line {
+            left: 15px;
+        }
+        
+        .timeline-dot {
+            left: 7px;
+        }
+        
+        .status-content {
+            padding-left: 2.5rem !important;
+        }
+    }
+    
+    /* Glassmorphism for cards */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Input field animations */
+    .input-group {
+        position: relative;
+    }
+    
+    .input-group input:focus ~ .input-icon {
+        color: #3b82f6;
+        transform: scale(1.1);
+    }
+    
+    .input-icon {
+        transition: all 0.3s ease;
+    }
+    
+    /* Not found animation */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    .shake {
+        animation: shake 0.5s;
+    }
+    
+    /* Imtiyoz badge */
+    .imtiyoz-badge {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl opacity-20"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-200 rounded-full filter blur-3xl opacity-20"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-200 rounded-full filter blur-3xl opacity-10"></div>
+    
+    <!-- Header -->
+    <header class="glass sticky top-0 z-50 border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <a href="{% url 'dormitory:home' %}" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                            <i class="bx bxs-building-house text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">XIU Yotoqxona</h1>
+                            <p class="text-xs text-gray-500 hidden sm:block">Holat tekshirish</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <nav class="flex items-center space-x-2">
+                    <a href="{% url 'dormitory:home' %}" class="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition flex items-center">
+                        <i class="bx bx-home-alt mr-2"></i>
+                        <span class="hidden sm:inline">Bosh sahifa</span>
+                    </a>
+                    <a href="{% url 'dormitory:home' %}#application-form" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition">
+                        <i class="bx bx-plus-circle mr-2"></i>
+                        <span class="hidden sm:inline">Yangi ariza</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:py-12">
+        <!-- Page Title -->
+        <div class="text-center mb-8" data-aos="fade-down">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Ariza Holatini</span> Tekshirish
+            </h2>
+            <p class="text-gray-600">Ariza raqami va telefon raqamingizni kiriting</p>
+        </div>
+        
+        <!-- Search Form -->
+        {% if not found %}
+        <div class="glass-card rounded-2xl shadow-xl p-6 sm:p-8 mb-8" data-aos="fade-up">
+            <form method="POST" class="space-y-6" id="statusForm">
+                {% csrf_token %}
+                
+                <!-- Search Icon -->
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto flex items-center justify-center search-icon-animate">
+                        <i class="bx bx-search-alt text-3xl text-white"></i>
+                    </div>
+                </div>
+                
+                <!-- Application Number -->
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="bx bx-hash text-blue-500"></i>
+                        Ariza raqami
+                    </label>
+                    <div class="relative">
+                        <input type="text" 
+                               name="ariza_raqami" 
+                               id="ariza_raqami"
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all form-input"
+                               placeholder="Masalan: YA-2025-A1B2C3"
+                               required>
+                        <div class="input-icon absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="bx bx-barcode text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Format: YA-YYYY-XXXXXX</p>
+                </div>
+                
+                <!-- Phone Number -->
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="bx bx-phone text-green-500"></i>
+                        Telefon raqamingiz
+                    </label>
+                    <div class="relative">
+                        <input type="tel" 
+                               name="telefon" 
+                               id="telefon"
+                               class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all form-input"
+                               placeholder="+998901234567"
+                               required
+                               pattern="\+998[0-9]{9}">
+                        <div class="input-icon absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="bx bx-mobile text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Ariza berganda kiritgan raqam</p>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl transition transform hover:scale-105 flex items-center justify-center">
+                    <i class="bx bx-search mr-2"></i>
+                    Tekshirish
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+            <div class="mb-6 p-4 rounded-xl flex items-center {% if message.tags == 'error' %}bg-red-50 border border-red-200 shake{% endif %}" data-aos="fade-up">
+                <div class="w-10 h-10 {% if message.tags == 'error' %}bg-red-100{% endif %} rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    {% if message.tags == 'error' %}
+                        <i class="bx bx-x-circle text-red-600 text-xl"></i>
+                    {% endif %}
+                </div>
+                <p class="text-sm {% if message.tags == 'error' %}text-red-800{% endif %}">
+                    {{ message }}
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Search Result -->
+        {% if found %}
+        <div class="result-card">
+            <!-- Application Found Card -->
+            <div class="glass-card rounded-2xl shadow-xl overflow-hidden mb-6" data-aos="zoom-in">
+                <!-- Header with gradient -->
+                <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Ariza topildi!</h3>
+                            <p class="text-white/80 text-sm">Ariza raqami: {{ ariza.ariza_raqami }}</p>
+                        </div>
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="bx bx-check-circle text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status Badge -->
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-600">Holat:</span>
+                        <span class="status-badge {{ ariza.holat }}">
+                            {% if ariza.holat == 'yangi' %}
+                                📝 Yangi
+                            {% elif ariza.holat == 'korilmoqda' %}
+                                👀 Ko'rib chiqilmoqda
+                            {% elif ariza.holat == 'imtixon' %}
+                                📋 Imtixon kutilmoqda
+                            {% elif ariza.holat == 'tasdiqlandi' %}
+                                ✅ Tasdiqlandi
+                            {% elif ariza.holat == 'rad_etildi' %}
+                                ❌ Rad etildi
+                            {% elif ariza.holat == 'bekor' %}
+                                🚫 Bekor qilindi
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Applicant Info -->
+                <div class="p-6 space-y-4">
+                    <!-- Personal Info -->
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="bx bx-user-circle text-blue-500 mr-2"></i>
+                            Shaxsiy ma'lumotlar
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500">F.I.Sh:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.fish }}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Pasport:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.pasport }}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Tug'ilgan sana:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.tugilgan_sana|date:"d.m.Y" }} ({{ ariza.yoshi }} yosh)</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Jinsi:</span>
+                                <p class="font-medium text-gray-900">
+                                    {% if ariza.jinsi == 'erkak' %}
+                                        <i class="bx bx-male text-blue-500"></i> Erkak
+                                    {% else %}
+                                        <i class="bx bx-female text-pink-500"></i> Ayol
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div class="bg-green-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="bx bx-phone text-green-500 mr-2"></i>
+                            Kontakt ma'lumotlari
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500">Telefon:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.telefon }}</p>
+                            </div>
+                            {% if ariza.telefon_qoshimcha %}
+                            <div>
+                                <span class="text-gray-500">Qo'shimcha telefon:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.telefon_qoshimcha }}</p>
+                            </div>
+                            {% endif %}
+                            <div class="sm:col-span-2">
+                                <span class="text-gray-500">Manzil:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.viloyat.nomi }}, {{ ariza.tuman }}, {{ ariza.manzil }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Education Info -->
+                    <div class="bg-blue-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="bx bx-graduation text-blue-500 mr-2"></i>
+                            Ta'lim ma'lumotlari
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500">Fakultet:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.fakultet.nomi }}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Kurs:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.kurs.raqam }}-kurs</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">O'quv yili:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.oquv_yili }}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Xona turi afzalligi:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.xona_turi_afzallik }} kishilik</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Family & Benefits Info -->
+                    <div class="bg-purple-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="bx bx-group text-purple-500 mr-2"></i>
+                            Oila va imtiyozlar
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500">Oila a'zolari:</span>
+                                <p class="font-medium text-gray-900">{{ ariza.oila_azolari }} kishi</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Imtiyoz holati:</span>
+                                <p class="font-medium text-gray-900">
+                                    {% if ariza.imtiyozli %}
+                                        <span class="imtiyoz-badge">
+                                            <i class="bx bx-award mr-1"></i>
+                                            {{ ariza.get_imtiyoz_turi_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-600">Imtiyoz yo'q</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        {% if ariza.imtiyoz_hujjat %}
+                        <div class="mt-3 pt-3 border-t border-purple-200">
+                            <a href="{{ ariza.imtiyoz_hujjat.url }}" target="_blank" class="inline-flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                <i class="bx bx-file mr-1"></i>
+                                Imtiyoz hujjatini ko'rish
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Timeline -->
+                    <div class="bg-orange-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="bx bx-time-five text-orange-500 mr-2"></i>
+                            Ariza jarayoni
+                        </h4>
+                        <div class="relative pl-8">
+                            <div class="timeline-line"></div>
+                            
+                            <!-- Submitted -->
+                            <div class="relative mb-6">
+                                <div class="timeline-dot completed"></div>
+                                <div class="status-content">
+                                    <p class="font-medium text-gray-900">📝 Ariza yuborildi</p>
+                                    <p class="text-sm text-gray-500">{{ ariza.ariza_sanasi|date:"d.m.Y H:i" }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Review -->
+                            <div class="relative mb-6">
+                                <div class="timeline-dot {% if ariza.holat != 'yangi' %}completed{% elif ariza.holat == 'korilmoqda' %}active{% endif %}"></div>
+                                <div class="status-content">
+                                    <p class="font-medium text-gray-900">👀 Ko'rib chiqilmoqda</p>
+                                    <p class="text-sm text-gray-500">
+                                        {% if ariza.holat != 'yangi' %}
+                                            Bajarildi
+                                        {% elif ariza.holat == 'korilmoqda' %}
+                                            Jarayonda...
+                                        {% else %}
+                                            Kutilmoqda
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Exam (if needed) -->
+                            {% if ariza.holat == 'imtixon' %}
+                            <div class="relative mb-6">
+                                <div class="timeline-dot active"></div>
+                                <div class="status-content">
+                                    <p class="font-medium text-gray-900">📋 Imtixon</p>
+                                    <p class="text-sm text-gray-500">Imtixon kutilmoqda</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Final Decision -->
+                            <div class="relative">
+                                <div class="timeline-dot {% if ariza.holat == 'tasdiqlandi' or ariza.holat == 'rad_etildi' %}completed{% endif %}"></div>
+                                <div class="status-content">
+                                    <p class="font-medium text-gray-900">📣 Yakuniy natija</p>
+                                    <p class="text-sm text-gray-500">
+                                        {% if ariza.holat == 'tasdiqlandi' %}
+                                            <span class="text-green-600 font-medium">✅ Tasdiqlandi</span>
+                                            {% if ariza.tasdiqlangan_sana %}
+                                                <br><small>{{ ariza.tasdiqlangan_sana|date:"d.m.Y H:i" }}</small>
+                                            {% endif %}
+                                        {% elif ariza.holat == 'rad_etildi' %}
+                                            <span class="text-red-600 font-medium">❌ Rad etildi</span>
+                                            {% if ariza.rad_sababi %}
+                                                <br><small>Sabab: {{ ariza.rad_sababi }}</small>
+                                            {% endif %}
+                                        {% elif ariza.holat == 'bekor' %}
+                                            <span class="text-gray-600 font-medium">🚫 Bekor qilindi</span>
+                                        {% else %}
+                                            <span class="text-gray-400">Kutilmoqda</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Notes (if any) -->
+                    {% if ariza.izoh %}
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-yellow-900 mb-2 flex items-center">
+                            <i class="bx bx-note text-yellow-600 mr-2"></i>
+                            Administratsiya izohi
+                        </h4>
+                        <p class="text-sm text-gray-700">{{ ariza.izoh }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Additional Info if accepted -->
+                    {% if ariza.holat == 'tasdiqlandi' and ariza.tayinlangan_xona %}
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-green-900 mb-3 flex items-center">
+                            <i class="bx bx-check-circle text-green-600 mr-2"></i>
+                            Tayinlangan xona ma'lumotlari
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-600">Bino:</span>
+                                <p class="font-bold text-gray-900">{{ ariza.tayinlangan_xona.bino.nomi }} ({{ ariza.tayinlangan_xona.bino.raqam }}-bino)</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Qavat:</span>
+                                <p class="font-bold text-gray-900">{{ ariza.tayinlangan_xona.qavat }}-qavat</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Xona raqami:</span>
+                                <p class="font-bold text-gray-900">{{ ariza.tayinlangan_xona.raqam }}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Xona sig'imi:</span>
+                                <p class="font-bold text-gray-900">{{ ariza.tayinlangan_xona.sig_imi }} kishilik</p>
+                            </div>
+                            {% if ariza.tayinlangan_xona.narxi %}
+                            <div class="col-span-2">
+                                <span class="text-gray-600">Oylik to'lov:</span>
+                                <p class="font-bold text-gray-900 text-lg">{{ ariza.tayinlangan_xona.narxi|floatformat:0 }} so'm</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Room facilities -->
+                        <div class="mt-3 pt-3 border-t border-green-200">
+                            <p class="text-xs text-gray-600 mb-2">Xona qulayliklari:</p>
+                            <div class="flex flex-wrap gap-2">
+                                {% if ariza.tayinlangan_xona.konditsioner %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+                                        <i class="bx bx-wind mr-1"></i>Konditsioner
+                                    </span>
+                                {% endif %}
+                                {% if ariza.tayinlangan_xona.muzlatgich %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+                                        <i class="bx bx-fridge mr-1"></i>Muzlatgich
+                                    </span>
+                                {% endif %}
+                                {% if ariza.tayinlangan_xona.bino.wifi %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+                                        <i class="bx bx-wifi mr-1"></i>Wi-Fi
+                                    </span>
+                                {% endif %}
+                                {% if ariza.tayinlangan_xona.bino.issiq_suv %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
+                                        <i class="bx bx-droplet mr-1"></i>Issiq suv
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-green-100 rounded-lg">
+                            <p class="text-sm text-green-800">
+                                <i class="bx bx-info-circle mr-1"></i>
+                                Iltimos, tayinlangan xonaga ko'chish uchun yotoqxona ma'muriyati bilan bog'laning.
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                        <button onclick="window.print()" 
+                                class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition flex items-center justify-center">
+                            <i class="bx bx-printer mr-2"></i>
+                            Chop etish
+                        </button>
+                        <a href="{% url 'dormitory:status' %}" 
+                           class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition flex items-center justify-center">
+                            <i class="bx bx-search-alt mr-2"></i>
+                            Yangi qidiruv
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Help Section -->
+        <div class="glass-card rounded-2xl p-6 text-center" data-aos="fade-up">
+            <i class="bx bx-help-circle text-4xl text-blue-500 mb-3"></i>
+            <h3 class="font-semibold text-gray-900 mb-2">Yordam kerakmi?</h3>
+            <p class="text-sm text-gray-600 mb-4">
+                Agar ariza raqamingizni unutgan bo'lsangiz yoki boshqa muammo bo'lsa, biz bilan bog'laning
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="tel:+998711234567" 
+                   class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                    <i class="bx bx-phone mr-2"></i>
+                    +998 71 123 45 67
+                </a>
+                <a href="mailto:yotoqxona@xiu.uz" 
+                   class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                    <i class="bx bx-envelope mr-2"></i>
+                    yotoqxona@xiu.uz
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Styles -->
+<style media="print">
+    body * {
+        visibility: hidden;
+    }
+    .result-card, .result-card * {
+        visibility: visible;
+    }
+    .result-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    button, a {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Phone number formatting
+document.getElementById('telefon')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (!value.startsWith('998')) {
+        value = '998' + value;
+    }
+    if (value.length > 12) {
+        value = value.slice(0, 12);
+    }
+    if (value.length > 3) {
+        value = '+' + value;
+    }
+    e.target.value = value;
+});
+
+// Form submission animation
+document.getElementById('statusForm')?.addEventListener('submit', function(e) {
+    const btn = this.querySelector('button[type="submit"]');
+    btn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Qidirilmoqda...';
+    btn.disabled = true;
+});
+
+// Auto-focus on first input
+window.addEventListener('load', function() {
+    document.getElementById('ariza_raqami')?.focus();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1176 @@
+<!-- templates/dormitory/home.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}XIU - Yotoqxonaga Online Ariza{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fix body scroll issue */
+    body {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: auto !important;
+    }
+    
+    /* Error field styles */
+    .error-field {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+    }
+    
+    .error-message {
+        animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Mobile specific fixes */
+    @media (max-width: 640px) {
+        .hero-title {
+            font-size: 2rem !important;
+            line-height: 2.5rem !important;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.5rem !important;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr !important;
+        }
+        
+        .progress-bar-mobile {
+            display: none;
+        }
+        
+        .xona-card {
+            padding: 1rem !important;
+        }
+    }
+    
+    /* Form field animations */
+    .field-group {
+        opacity: 0;
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    }
+    
+    /* Smooth transitions */
+    .smooth-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Remove absolute positioning that might cause issues */
+    .blob {
+        position: fixed !important;
+        z-index: -1;
+    }
+    
+    /* Success animation */
+    @keyframes successPulse {
+        0% { transform: scale(0.95); opacity: 0; }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .success-animation {
+        animation: successPulse 0.5s ease-out;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white relative">
+    <!-- Header -->
+    <header class="glass sticky top-0 z-50 border-b border-gray-100" x-data="{ mobileMenu: false }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="bx bxs-building-house text-white text-2xl"></i>
+                        </div>
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-900">XIU Yotoqxona</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">Online ariza tizimi</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-2">
+                    <a href="#home" class="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition flex items-center">
+                        <i class="bx bx-home-alt mr-2"></i>
+                        Bosh sahifa
+                    </a>
+                    <a href="#features" class="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition flex items-center">
+                        <i class="bx bx-star mr-2"></i>
+                        Afzalliklar
+                    </a>
+                    <a href="#faq" class="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition flex items-center">
+                        <i class="bx bx-help-circle mr-2"></i>
+                        Savollar
+                    </a>
+                    <a href="https://t.me/uygun_98" class="ml-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition transform hover:scale-105 btn-premium" target="_blank">
+                        <i class="bx bxl-telegram mr-2"></i>
+                        @uygun_98
+                    </a>
+
+                </nav>
+                
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
+                    <i class="bx" :class="mobileMenu ? 'bx-x' : 'bx-menu'" style="font-size: 24px;"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenu" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform -translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform -translate-y-2"
+             class="md:hidden border-t border-gray-100 bg-white">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#home" @click="mobileMenu = false" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition">
+                    <i class="bx bx-home-alt mr-2"></i> Bosh sahifa
+                </a>
+                <a href="#features" @click="mobileMenu = false" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition">
+                    <i class="bx bx-star mr-2"></i> Afzalliklar
+                </a>
+                <a href="#faq" @click="mobileMenu = false" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition">
+                    <i class="bx bx-help-circle mr-2"></i> Savollar
+                </a>
+                <a href="https://t.me/uygun_98" class="block px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-center">
+                    <i class="bx bxl-telegram mr-2"></i> @uygun_98
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section id="home" class="relative py-12 sm:py-20 px-4 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <div data-aos="fade-right">
+                    <div class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+                        <span class="relative flex h-2 w-2 mr-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                        </span>
+                        2025-2026 o'quv yili
+                    </div>
+                    
+                    <h1 class="hero-title text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                        <span class="gradient-text">XIU</span> Talabalar 
+                        <span class="block">Yotoqxonasi</span>
+                    </h1>
+                    
+                    <p class="text-lg sm:text-xl text-gray-600 mb-8">
+                        Xalqaro Innovatsion Universitetining zamonaviy yotoqxonasiga online ariza bering
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <a href="#application-form" class="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl transition transform hover:scale-105 text-center btn-premium">
+                            <i class="bx bx-rocket mr-2"></i>
+                            Ariza berish
+                        </a>
+                        <button onclick="playVideo()" class="px-6 sm:px-8 py-3 sm:py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-blue-500 transition text-center">
+                            <i class="bx bx-play-circle mr-2"></i>
+                            Video ko'rish
+                        </button>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="stats-grid grid grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900">280+</div>
+                            <div class="text-xs sm:text-sm text-gray-500">O'rin mavjud</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900">24/7</div>
+                            <div class="text-xs sm:text-sm text-gray-500">Xavfsizlik</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl sm:text-3xl font-bold text-gray-900">100Mb+</div>
+                            <div class="text-xs sm:text-sm text-gray-500">Internet</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hero Image -->
+                <div class="relative hidden lg:block" data-aos="fade-left">
+                    <div class="relative z-10">
+                        <lottie-player 
+                            src="https://assets3.lottiefiles.com/packages/lf20_kkflmtur.json"
+                            background="transparent"
+                            speed="1"
+                            style="width: 100%; height: 400px;"
+                            loop
+                            autoplay>
+                        </lottie-player>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="py-16 sm:py-20 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Bizning Afzalliklarimiz</h2>
+                <p class="text-lg sm:text-xl text-gray-600">XIU yotoqxonasining imkoniyatlari</p>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div class="group p-4 sm:p-6 bg-white rounded-2xl hover:shadow-xl transition smooth-hover" data-aos="fade-up">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+                        <i class="bx bx-wifi text-white text-xl sm:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">Tezkor Internet</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">100Mb/s tezlikda Wi-Fi</p>
+                </div>
+                
+                <div class="group p-4 sm:p-6 bg-white rounded-2xl hover:shadow-xl transition smooth-hover" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+                        <i class="bx bx-shield-quarter text-white text-xl sm:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">Xavfsizlik</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">24/7 kamera nazorati</p>
+                </div>
+                
+                <div class="group p-4 sm:p-6 bg-white rounded-2xl hover:shadow-xl transition smooth-hover" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+                        <i class="bx bx-restaurant text-white text-xl sm:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">Oshxona</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">Zamonaviy jihozlar</p>
+                </div>
+                
+                <div class="group p-4 sm:p-6 bg-white rounded-2xl hover:shadow-xl transition smooth-hover" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition">
+                        <i class="bx bx-book-reader text-white text-xl sm:text-2xl"></i>
+                    </div>
+                    <h3 class="text-base sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">O'quv xonasi</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">Tinch muhit</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Application Form Section -->
+    <section id="application-form" class="py-16 sm:py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden" data-aos="fade-up">
+                <!-- Form Header -->
+                <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 sm:p-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Online Ariza</h2>
+                    <p class="text-blue-100 text-sm sm:text-base">Barcha maydonlarni to'ldiring</p>
+                </div>
+                
+                <!-- Progress Bar - Desktop only -->
+                <div class="px-6 sm:px-8 pt-6 hidden sm:block">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-xs">1</div>
+                            <span class="ml-2 font-medium text-gray-900 hidden md:inline">Shaxsiy</span>
+                        </div>
+                        <div class="flex-1 mx-2 h-1 bg-gray-200 rounded"></div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-semibold text-xs">2</div>
+                            <span class="ml-2 text-gray-500 hidden md:inline">Manzil</span>
+                        </div>
+                        <div class="flex-1 mx-2 h-1 bg-gray-200 rounded"></div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-semibold text-xs">3</div>
+                            <span class="ml-2 text-gray-500 hidden md:inline">Imtiyoz</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- General Form Errors -->
+                {% if form.non_field_errors %}
+                <div class="mx-4 sm:mx-8 mb-4 sm:mb-6">
+                    <div class="p-4 rounded-xl bg-red-50 border border-red-200 error-message">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Xatoliklar topildi:</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="mx-4 sm:mx-8 mb-4 sm:mb-6">
+                        <div class="p-3 sm:p-4 rounded-xl flex items-center {% if message.tags == 'success' %}bg-green-50 border border-green-200 success-animation{% elif message.tags == 'error' %}bg-red-50 border border-red-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 {% if message.tags == 'success' %}bg-green-100{% elif message.tags == 'error' %}bg-red-100{% else %}bg-blue-100{% endif %} rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                {% if message.tags == 'success' %}
+                                    <i class="bx bx-check text-green-600"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="bx bx-x text-red-600"></i>
+                                {% else %}
+                                    <i class="bx bx-info-circle text-blue-600"></i>
+                                {% endif %}
+                            </div>
+                            <p class="text-sm {% if message.tags == 'success' %}text-green-800{% elif message.tags == 'error' %}text-red-800{% else %}text-blue-800{% endif %}">
+                                {{ message }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- Form -->
+                <form method="POST" enctype="multipart/form-data" class="p-4 sm:p-8 space-y-6 sm:space-y-8" x-data="formHandler()" id="dormitoryForm">
+                    {% csrf_token %}
+                    
+                    <!-- Shaxsiy ma'lumotlar -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-user"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Shaxsiy ma'lumotlar</h3>
+                        </div>
+                        
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <!-- FISh -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    To'liq ism-familiya <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.fish }}
+                                    {% if form.fish.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.fish.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Jinsi -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Jinsingiz <span class="text-red-500">*</span>
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="radio" name="jinsi" value="erkak" id="erkak" class="hidden" required>
+                                    <label for="erkak" class="flex items-center justify-center px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 transition text-sm sm:text-base gender-option">
+                                        <i class="bx bx-male text-blue-500 mr-1 sm:mr-2"></i>
+                                        Erkak
+                                    </label>
+                                    
+                                    <input type="radio" name="jinsi" value="ayol" id="ayol" class="hidden" required>
+                                    <label for="ayol" class="flex items-center justify-center px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-500 transition text-sm sm:text-base gender-option">
+                                        <i class="bx bx-female text-pink-500 mr-1 sm:mr-2"></i>
+                                        Ayol
+                                    </label>
+                                </div>
+                                {% if form.jinsi.errors %}
+                                <div class="mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 error-message">
+                                    <div class="flex items-start">
+                                        <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span>{{ form.jinsi.errors.0 }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Tug'ilgan sana -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tug'ilgan sana <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.tugilgan_sana }}
+                                    {% if form.tugilgan_sana.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.tugilgan_sana.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Pasport -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pasport <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.pasport }}
+                                    <p class="mt-1 text-xs text-gray-500">Format: AA1234567</p>
+                                    {% if form.pasport.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.pasport.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Kontakt va Manzil -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-phone"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Kontakt</h3>
+                        </div>
+                        
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Telefon raqamingiz <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.telefon }}
+                                    {% if form.telefon.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.telefon.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ota-ona telefoni
+                                </label>
+                                <div class="relative">
+                                    {{ form.telefon_qoshimcha }}
+                                    {% if form.telefon_qoshimcha.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.telefon_qoshimcha.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center mb-4 sm:mb-6 mt-6 sm:mt-8">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-map"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Manzil</h3>
+                        </div>
+                        
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Viloyat <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.viloyat }}
+                                    {% if form.viloyat.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.viloyat.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tuman/Shahar <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.tuman }}
+                                    {% if form.tuman.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.tuman.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    To'liq manzil <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.manzil }}
+                                    {% if form.manzil.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.manzil.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ta'lim -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-graduation"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Ta'lim</h3>
+                        </div>
+                        
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fakultet <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    {{ form.fakultet }}
+                                    {% if form.fakultet.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.fakultet.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Kurs
+                                </label>
+                                <div class="relative">
+                                    {{ form.kurs }}
+                                    {% if form.kurs.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.kurs.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Oila -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-group"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Oila</h3>
+                        </div>
+                        
+                        <div class="max-w-xs">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Oilada necha kishi yashaydi? <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                {{ form.oila_azolari }}
+                                {% if form.oila_azolari.errors %}
+                                <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                    <div class="flex items-start">
+                                        <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span>{{ form.oila_azolari.errors.0 }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Imtiyozlar -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-award"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Imtiyozlar</h3>
+                        </div>
+                        
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Imtiyozingiz bormi?
+                                </label>
+                                <div class="relative">
+                                    {{ form.imtiyoz_turi }}
+                                    {% if form.imtiyoz_turi.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.imtiyoz_turi.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div x-show="showFile" x-transition>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Imtiyoz hujjati
+                                </label>
+                                <div class="relative">
+                                    {{ form.imtiyoz_hujjat }}
+                                    <p class="mt-1 text-xs text-gray-500">PDF, JPG, PNG (5MB)</p>
+                                    {% if form.imtiyoz_hujjat.errors %}
+                                    <div class="absolute left-0 right-0 mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 z-10 error-message">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span>{{ form.imtiyoz_hujjat.errors.0 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Xona -->
+                    <div class="field-group">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mr-3">
+                                <i class="bx bx-bed"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Xona turi</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                            <label class="relative">
+                                <input type="radio" name="xona_turi_afzallik" value="2" class="sr-only peer">
+                                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-500 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition">
+                                    <div class="text-center">
+                                        <i class="bx bx-user text-2xl text-blue-500 mb-2"></i>
+                                        <p class="font-semibold">2 kishilik</p>
+                                        <p class="text-xs text-gray-500">Premium</p>
+                                    </div>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="xona_turi_afzallik" value="3" class="sr-only peer">
+                                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-purple-500 peer-checked:border-purple-500 peer-checked:bg-purple-50 transition">
+                                    <div class="text-center">
+                                        <i class="bx bx-group text-2xl text-purple-500 mb-2"></i>
+                                        <p class="font-semibold">3 kishilik</p>
+                                        <p class="text-xs text-gray-500">Optimal</p>
+                                    </div>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="xona_turi_afzallik" value="4" class="sr-only peer" checked>
+                                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-green-500 peer-checked:border-green-500 peer-checked:bg-green-50 transition">
+                                    <div class="text-center">
+                                        <i class="bx bxs-group text-2xl text-green-500 mb-2"></i>
+                                        <p class="font-semibold">4 kishilik</p>
+                                        <p class="text-xs text-gray-500">Standart</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        {% if form.xona_turi_afzallik.errors %}
+                        <div class="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 error-message">
+                            <div class="flex items-start">
+                                <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>{{ form.xona_turi_afzallik.errors.0 }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Submit -->
+                    <div class="border-t-2 border-gray-100 pt-6 sm:pt-8">
+                        <div class="mb-4 sm:mb-6">
+                            <label class="flex items-start cursor-pointer">
+                                <input type="checkbox" required class="mt-1 mr-2 sm:mr-3 w-4 h-4 sm:w-5 sm:h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500" id="agreement">
+                                <span class="text-xs sm:text-sm text-gray-600">
+                                    <a href="#" class="text-blue-600 hover:underline">Foydalanish shartlari</a> bilan tanishdim va roziman.
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-between sm:items-center">
+                            <div class="flex items-center text-xs sm:text-sm text-gray-500">
+                                <i class="bx bx-lock-alt mr-2"></i>
+                                Ma'lumotlar himoyalangan
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button type="reset" class="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition text-sm sm:text-base">
+                                    <i class="bx bx-refresh mr-1 sm:mr-2"></i>
+                                    Tozalash
+                                </button>
+                                
+                                <button type="submit" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-xl transition transform hover:scale-105 text-sm sm:text-base btn-premium" id="submitBtn">
+                                    <i class="bx bx-send mr-1 sm:mr-2"></i>
+                                    Yuborish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 sm:py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8 sm:mb-12" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Savollar</h2>
+                <p class="text-lg sm:text-xl text-gray-600">Ko'p beriladigan savollar</p>
+            </div>
+            
+            <div class="space-y-3 sm:space-y-4" x-data="{ selected: null }">
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm" data-aos="fade-up">
+                    <button @click="selected !== 1 ? selected = 1 : selected = null"
+                            class="w-full px-4 sm:px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition">
+                        <span class="font-semibold text-gray-900 text-sm sm:text-base">
+                            Ariza natijasi qancha vaqtda chiqadi?
+                        </span>
+                        <i class="bx bx-chevron-down text-gray-400 transition text-xl"
+                           :class="selected === 1 ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="selected === 1" 
+                         x-collapse
+                         class="px-4 sm:px-6 pb-4 text-gray-600 text-sm sm:text-base">
+                        3 ish kuni ichida SMS orqali xabar beriladi.
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <button @click="selected !== 2 ? selected = 2 : selected = null"
+                            class="w-full px-4 sm:px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition">
+                        <span class="font-semibold text-gray-900 text-sm sm:text-base">
+                            Yotoqxona to'lovi qancha?
+                        </span>
+                        <i class="bx bx-chevron-down text-gray-400 transition text-xl"
+                           :class="selected === 2 ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="selected === 2" 
+                         x-collapse
+                         class="px-4 sm:px-6 pb-4 text-gray-600 text-sm sm:text-base">
+                        Oylik to'lov 200,000 - 500,000 so'm oralig'ida.
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                    <button @click="selected !== 3 ? selected = 3 : selected = null"
+                            class="w-full px-4 sm:px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition">
+                        <span class="font-semibold text-gray-900 text-sm sm:text-base">
+                            Qanday hujjatlar kerak?
+                        </span>
+                        <i class="bx bx-chevron-down text-gray-400 transition text-xl"
+                           :class="selected === 3 ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="selected === 3" 
+                         x-collapse
+                         class="px-4 sm:px-6 pb-4 text-gray-600 text-sm sm:text-base">
+                        Pasport va imtiyoz hujjatlari (agar bo'lsa).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 sm:py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center">
+                <p class="text-sm sm:text-base">© 2025 XIU - Xalqaro Innovatsion Universiteti</p>
+                <p class="text-xs sm:text-sm text-gray-400 mt-2">Barcha huquqlar himoyalangan!</p>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fix body scroll on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.style.position = 'relative';
+    document.body.style.width = '100%';
+    document.body.style.height = 'auto';
+    document.body.style.overflow = 'auto';
+    
+    // Add error field styling to Django form fields
+    const formFields = document.querySelectorAll('.errorlist');
+    formFields.forEach(function(errorList) {
+        const field = errorList.previousElementSibling;
+        if (field && field.tagName === 'INPUT' || field.tagName === 'SELECT' || field.tagName === 'TEXTAREA') {
+            field.classList.add('error-field');
+        }
+    });
+    
+    // Gender selection visual feedback
+    const genderInputs = document.querySelectorAll('input[name="jinsi"]');
+    genderInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.gender-option').forEach(label => {
+                label.classList.remove('border-blue-500', 'bg-blue-50', 'border-pink-500', 'bg-pink-50');
+            });
+            
+            if (this.checked) {
+                const label = this.nextElementSibling;
+                if (this.value === 'erkak') {
+                    label.classList.add('border-blue-500', 'bg-blue-50');
+                } else {
+                    label.classList.add('border-pink-500', 'bg-pink-50');
+                }
+            }
+        });
+    });
+});
+
+function formHandler() {
+    return {
+        showFile: false,
+        
+        init() {
+            // Initialize form handlers
+            const imtiyozSelect = document.querySelector('[name="imtiyoz_turi"]');
+            if (imtiyozSelect) {
+                this.showFile = imtiyozSelect.value !== 'yoq';
+                imtiyozSelect.addEventListener('change', (e) => {
+                    this.showFile = e.target.value !== 'yoq';
+                });
+            }
+        }
+    }
+}
+
+// Video player
+function playVideo() {
+    Swal.fire({
+        title: 'Video ko\'rish',
+        html: '<iframe width="100%" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>',
+        width: 800,
+        showCloseButton: true,
+        showConfirmButton: false
+    });
+}
+
+// Real-time form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('dormitoryForm');
+    if (!form) return;
+    
+    // Phone number formatting
+    const phoneInputs = document.querySelectorAll('input[name="telefon"], input[name="telefon_qoshimcha"]');
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value.startsWith('998')) {
+                value = '998' + value;
+            }
+            if (value.length > 12) {
+                value = value.slice(0, 12);
+            }
+            if (value.length > 3) {
+                value = '+' + value;
+            }
+            e.target.value = value;
+        });
+    });
+    
+    // Passport formatting
+    const passportInput = document.querySelector('input[name="pasport"]');
+    if (passportInput) {
+        passportInput.addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value.length > 9) {
+                value = value.slice(0, 9);
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Form submission with validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let hasErrors = false;
+        const errors = [];
+        
+        // Clear previous error messages
+        document.querySelectorAll('.custom-error').forEach(el => el.remove());
+        document.querySelectorAll('.error-field').forEach(el => {
+            el.classList.remove('error-field');
+        });
+        
+        // Validate required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                hasErrors = true;
+                field.classList.add('error-field');
+                const label = field.closest('div').querySelector('label');
+                const fieldName = label ? label.textContent.replace(' *', '') : 'Maydon';
+                errors.push(`${fieldName} to'ldirilishi shart`);
+                
+                // Show inline error
+                showFieldError(field, 'Bu maydon to\'ldirilishi shart');
+            }
+        });
+        
+        // Validate phone number
+        const telefon = form.querySelector('input[name="telefon"]');
+        if (telefon && telefon.value) {
+            const phoneRegex = /^\+998\d{9}$/;
+            if (!phoneRegex.test(telefon.value)) {
+                hasErrors = true;
+                telefon.classList.add('error-field');
+                errors.push('Telefon raqam formati noto\'g\'ri');
+                showFieldError(telefon, 'Format: +998901234567');
+            }
+        }
+        
+        // Validate passport
+        const pasport = form.querySelector('input[name="pasport"]');
+        if (pasport && pasport.value) {
+            const passportRegex = /^[A-Z]{2}\d{7}$/;
+            if (!passportRegex.test(pasport.value)) {
+                hasErrors = true;
+                pasport.classList.add('error-field');
+                errors.push('Pasport raqami formati noto\'g\'ri');
+                showFieldError(pasport, 'Format: AA1234567');
+            }
+        }
+        
+        // Validate gender selection
+        const genderSelected = form.querySelector('input[name="jinsi"]:checked');
+        if (!genderSelected) {
+            hasErrors = true;
+            errors.push('Jinsingizni tanlang');
+            const genderDiv = form.querySelector('input[name="jinsi"]').closest('div');
+            showFieldError(genderDiv, 'Jinsingizni tanlang');
+        }
+        
+        // Validate agreement checkbox
+        const agreement = form.querySelector('#agreement');
+        if (!agreement.checked) {
+            hasErrors = true;
+            errors.push('Foydalanish shartlariga rozilik bildiring');
+        }
+        
+        // Show errors or submit
+        if (hasErrors) {
+            // Show alert with all errors
+            Swal.fire({
+                icon: 'error',
+                title: 'Xatolik!',
+                html: '<ul class="text-left list-disc list-inside">' + 
+                      errors.map(err => `<li>${err}</li>`).join('') + 
+                      '</ul>',
+                confirmButtonText: 'Tushundim',
+                confirmButtonColor: '#EF4444'
+            });
+        } else {
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Yuklanmoqda...';
+            submitBtn.disabled = true;
+            
+            // Submit form
+            form.submit();
+        }
+    });
+    
+    // Function to show field-specific error
+    function showFieldError(field, message) {
+        const parent = field.closest('div');
+        const existingError = parent.querySelector('.custom-error');
+        
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'custom-error mt-1 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 error-message';
+        errorDiv.innerHTML = `
+            <div class="flex items-start">
+                <svg class="w-4 h-4 text-red-400 mt-0.5 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <span>${message}</span>
+            </div>
+        `;
+        parent.appendChild(errorDiv);
+    }
+    
+    // Real-time validation on blur
+    const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error-field')) {
+                this.classList.remove('error-field');
+                const errorMsg = this.closest('div').querySelector('.custom-error');
+                if (errorMsg) errorMsg.remove();
+            }
+        });
+    });
+    
+    function validateField(field) {
+        const parent = field.closest('div');
+        const existingError = parent.querySelector('.custom-error');
+        if (existingError) existingError.remove();
+        
+        field.classList.remove('error-field');
+        
+        if (field.hasAttribute('required') && !field.value.trim()) {
+            field.classList.add('error-field');
+            showFieldError(field, 'Bu maydon to\'ldirilishi shart');
+            return false;
+        }
+        
+        // Special validation for specific fields
+        if (field.name === 'telefon' && field.value) {
+            const phoneRegex = /^\+998\d{9}$/;
+            if (!phoneRegex.test(field.value)) {
+                field.classList.add('error-field');
+                showFieldError(field, 'Format: +998901234567');
+                return false;
+            }
+        }
+        
+        if (field.name === 'pasport' && field.value) {
+            const passportRegex = /^[A-Z]{2}\d{7}$/;
+            if (!passportRegex.test(field.value)) {
+                field.classList.add('error-field');
+                showFieldError(field, 'Format: AA1234567');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Reset form handler
+    form.addEventListener('reset', function() {
+        // Clear all error states
+        document.querySelectorAll('.error-field').forEach(el => {
+            el.classList.remove('error-field');
+        });
+        document.querySelectorAll('.custom-error').forEach(el => {
+            el.remove();
+        });
+        
+        // Reset gender selection styles
+        document.querySelectorAll('.gender-option').forEach(label => {
+            label.classList.remove('border-blue-500', 'bg-blue-50', 'border-pink-500', 'bg-pink-50');
+        });
+    });
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
