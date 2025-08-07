@@ -209,9 +209,11 @@ class XonaAdmin(admin.ModelAdmin):
     
     def narxi_display(self, obj):
         if obj.narxi:
+            # Format the number with thousands separator
+            formatted_price = "{:,.0f}".format(float(obj.narxi))
             return format_html(
-                '<span style="font-weight: bold; color: #2c3e50;">{:,.0f} so\'m</span>',
-                obj.narxi
+                '<span style="font-weight: bold; color: #2c3e50;">{} so\'m</span>',
+                formatted_price
             )
         return '-'
     narxi_display.short_description = "Narx"
