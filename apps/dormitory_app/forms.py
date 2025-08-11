@@ -28,7 +28,6 @@ class YotoqxonaArizaForm(forms.ModelForm):
             'fakultet', 'kurs',
             'oila_azolari',
             'imtiyoz_turi', 'imtiyoz_hujjat',
-            'xona_turi_afzallik'
         ]
         
         widgets = {
@@ -118,10 +117,6 @@ class YotoqxonaArizaForm(forms.ModelForm):
                 'id': 'imtiyoz_hujjat_input'
             }),
             
-            # Xona
-            'xona_turi_afzallik': forms.RadioSelect(attrs={
-                'class': 'flex gap-4'
-            }),
         }
         
         labels = {
@@ -139,7 +134,6 @@ class YotoqxonaArizaForm(forms.ModelForm):
             'oila_azolari': 'Oilada necha kishi yashaydi?',
             'imtiyoz_turi': 'Imtiyozingiz bormi?',
             'imtiyoz_hujjat': 'Imtiyoz hujjati (agar bo\'lsa)',
-            'xona_turi_afzallik': 'Qaysi turdagi xonani afzal ko\'rasiz?',
         }
     
     def __init__(self, *args, **kwargs):

@@ -112,6 +112,8 @@ class Xona(models.Model):
         (2, '2 kishilik'),
         (3, '3 kishilik'),
         (4, '4 kishilik'),
+        (5, '5 kishilik'),
+        (6, '6 kishilik'),
     ]
     
     bino = models.ForeignKey(YotoqxonaBino, on_delete=models.CASCADE, related_name='xonalar')
@@ -264,7 +266,8 @@ class YotoqxonaAriza(models.Model):
     xona_turi_afzallik = models.IntegerField(
         choices=Xona.XONA_TURI,
         verbose_name="Afzal xona turi",
-        default=4
+        null=True,
+        blank=True
     )
     
     # Tizim ma'lumotlari
